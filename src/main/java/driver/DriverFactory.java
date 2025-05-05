@@ -18,12 +18,12 @@ public class DriverFactory {
     }
 
     private static WebDriver createChromeDriver() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\andre\\.cache\\selenium\\chromedriver\\win64\\135.0.7049.114\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Andrew kan\\.cache\\selenium\\chromedriver\\win64\\131.0.6778.204\\chromedriver.exe");
         return new ChromeDriver();
     }
 
     private static WebDriver createYandexDriver() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\andre\\.cache\\selenium\\chromedriver\\win64\\135.0.7049.114\\yandexdriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Andrew kane\\.cache\\selenium\\chromedriver\\win64\\131.0.6778.204\\yandexdriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.setBinary("C:\\Users\\andre\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe");
         return new ChromeDriver(options);
