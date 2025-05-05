@@ -23,7 +23,6 @@ public class LoginTest {
     private LoginPage loginPage;
     private ProfilePage profilePage;
     Client client;
-    boolean isUserCreated = false;
 
 
     @Before
