@@ -19,7 +19,7 @@ public class ConstructorTest {
     @Before
     public void setUp() {
         // Инициализация драйвера через фабрику
-        driver = DriverFactory.createDriver("yandex");  // "chrome" или "yandex"
+        driver = DriverFactory.createDriver("chrome");  // "chrome" или "yandex"
         mainPage = new MainPage(driver);
         // Открывается тестируемый сайт
         driver.get(TestData.BASE_URL);

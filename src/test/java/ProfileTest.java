@@ -27,7 +27,7 @@ public class ProfileTest {
     @Before
     public void setUp() {
         // Инициализация ChromeDriver
-        driver = DriverFactory.createDriver("yandex");  // "chrome" или "yandex"
+        driver = DriverFactory.createDriver("chrome");  // "chrome" или "yandex"
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         profilePage = new ProfilePage(driver);
