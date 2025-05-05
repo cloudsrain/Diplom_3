@@ -23,8 +23,6 @@ public class ProfileTest {
     private LoginPage loginPage;
     private ProfilePage profilePage;
     Client client;
-    boolean isUserCreated = false;
-
 
     @Before
     public void setUp() {
