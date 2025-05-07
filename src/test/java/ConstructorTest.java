@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import pageLocators.Locators;
 import pages.MainPage;
 
 import java.time.Duration;
@@ -30,24 +29,24 @@ public class ConstructorTest {
     @DisplayName("Successful transition to buns section")
     @Description("Успешный переход к разделу 'Булки'")
     public void runSuccessfulTransitionToBunsTest(){
-        mainPage.clickOnBurgerParts(Locators.FILLINGS_BUTTON);
-        mainPage.clickOnBurgerParts(Locators.BUNS_BUTTON);
-        mainPage.checkSectionIsSelected(Locators.BUNS_BUTTON, Locators.SELECTED_SECTION);
+        mainPage.clickOnFillings();
+        mainPage.clickOnBuns();
+        mainPage.checkBunsIsSelected();
     }
 
     @Test
     @DisplayName("Successful transition to sauce section")
     @Description("Успешный переход к разделу 'Соусы'")
     public void runSuccessfulTransitionToSauceTest(){
-        mainPage.clickOnBurgerParts(Locators.SAUCE_BUTTON);
-        mainPage.checkSectionIsSelected(Locators.SAUCE_BUTTON, Locators.SELECTED_SECTION);
+        mainPage.clickOnSauce();
+        mainPage.checkSauceIsSelected();
     }
     @Test
     @DisplayName("Successful transition to fillings section")
     @Description("Успешный переход к разделу 'Начинки'")
     public void runSuccessfulTransitionToFillingsTest (){
-        mainPage.clickOnBurgerParts(Locators.FILLINGS_BUTTON);
-        mainPage.checkSectionIsSelected(Locators.FILLINGS_BUTTON, Locators.SELECTED_SECTION);
+        mainPage.clickOnFillings();
+        mainPage.checkFillingsIsSelected();
     }
 
     @After
