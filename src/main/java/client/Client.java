@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import data.TestData;
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
 import model.User;
@@ -11,7 +12,6 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class Client {
 
-    private static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
     private static final String USER_CREATION_PATH = "/api/auth/register";
     private static final String DELETE_USER_PATH = "/api/auth/user";
     private static final String USER_LOGIN_PATH = "/api/auth/login";
@@ -22,7 +22,7 @@ public class Client {
     public ValidatableResponse createUser(User user){
         return given()
                 .log().all()
-                .baseUri(BASE_URL)
+                .baseUri(TestData.BASE_URL)
                 .header("Content-Type", "application/json")
                 .body(user)
                 .when()
@@ -35,7 +35,7 @@ public class Client {
     public void deleteUser(String accessToken){
         given()
                 .log().all()
-                .baseUri(BASE_URL)
+                .baseUri(TestData.BASE_URL)
                 .header("Authorization", "Bearer " + accessToken)
                 .when()
                 .delete(DELETE_USER_PATH)
@@ -47,7 +47,7 @@ public class Client {
     public ValidatableResponse loginUser(UserLogin credentials){
         return given()
                 .log().all()
-                .baseUri(BASE_URL)
+                .baseUri(TestData.BASE_URL)
                 .header("Content-Type", "application/json")
                 .body(credentials)
                 .when()
