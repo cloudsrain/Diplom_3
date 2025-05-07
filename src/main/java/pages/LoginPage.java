@@ -2,14 +2,23 @@ package pages;
 
 import io.qameta.allure.Step;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pageLocators.Locators;
 
 import java.time.Duration;
 
 public class LoginPage {
+
+    //ЛОКАТОРЫ
+    private static final By LOGIN_BUTTON = By.xpath(".//*[text()='Войти']");
+    private static final By EMAIL_FIELD = By.xpath("//label[text()='Email']/following-sibling::input");
+    private static final By PASSWORD_FIELD = By.xpath("//input[@type='password']");
+    private static final By FORGET_PASSWORD_LINK =By.xpath(".//*[text()='Восстановить пароль']");
+    private static final By REGISTRATION_LINK = By.xpath(".//*[text()='Зарегистрироваться']");
+    private static final By LOGIN_HEADER_TEXT = By.xpath("//h2[text()='Вход']");
+    //ЛОКАТОРЫ
 
     private final WebDriver driver;
 
@@ -20,34 +29,34 @@ public class LoginPage {
     @Step("Нажимаем на кнопку 'Войти'")
     public void clickOnLoginButton() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // Ждём до 10 секунд
-        wait.until(ExpectedConditions.elementToBeClickable(Locators.LOGIN_BUTTON)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(LOGIN_BUTTON)).click();
     }
 
     @Step("Переходим по ссылку 'Восстановить пароль'")
     public void clickOnForgetPasswordLink(){
-        driver.findElement(Locators.FORGET_PASSWORD_LINK).click();
+        driver.findElement(FORGET_PASSWORD_LINK).click();
     }
 
     @Step("Переходим по ссылке 'Зарегистрироваться'")
     public void clickOnRegistrationLink() {
-        driver.findElement(Locators.REGISTRATION_LINK).click();
+        driver.findElement(REGISTRATION_LINK).click();
     }
 
     @Step("Заполняем форму входа: email = {0}, пароль = {1}")
     public void fillingLoginForm(String email, String password) {
         new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(Locators.LOGIN_HEADER_TEXT));
-        driver.findElement(Locators.EMAIL_FIELD).clear();
-        driver.findElement(Locators.EMAIL_FIELD).sendKeys(email);
-        driver.findElement(Locators.PASSWORD_FIELD).clear();
-        driver.findElement(Locators.PASSWORD_FIELD).sendKeys(password);
+                .until(ExpectedConditions.visibilityOfElementLocated(LOGIN_HEADER_TEXT));
+        driver.findElement(EMAIL_FIELD).clear();
+        driver.findElement(EMAIL_FIELD).sendKeys(email);
+        driver.findElement(PASSWORD_FIELD).clear();
+        driver.findElement(PASSWORD_FIELD).sendKeys(password);
     }
 
     @Step("Успешный выход из аккаунта")
     public void successfulLogout (){
         new WebDriverWait(driver, Duration.ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(Locators.LOGIN_HEADER_TEXT));
-        Assert.assertTrue("Заголовка нет на экране",driver.findElement(Locators.LOGIN_HEADER_TEXT).isDisplayed());
+                .until(ExpectedConditions.visibilityOfElementLocated(LOGIN_HEADER_TEXT));
+        Assert.assertTrue("Заголовка нет на экране",driver.findElement(LOGIN_HEADER_TEXT).isDisplayed());
     }
 
 }
