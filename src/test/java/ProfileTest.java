@@ -34,7 +34,8 @@ public class ProfileTest {
 
     @Before
     public void setUp() {
-        driver = DriverFactory.createDriver("chrome");
+        driver = DriverFactory.createDriver("chrome"); // "chrome" или "yandex"
+        driver.manage().window().maximize();
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         profilePage = new ProfilePage(driver);

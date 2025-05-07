@@ -35,7 +35,8 @@ public class LoginTest {
     @Before
     public void setUp() {
         // Инициализация драйвера и страниц
-        driver = DriverFactory.createDriver("chrome");
+        driver = DriverFactory.createDriver("chrome"); // "chrome" или "yandex"
+        driver.manage().window().maximize();
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         profilePage = new ProfilePage(driver);

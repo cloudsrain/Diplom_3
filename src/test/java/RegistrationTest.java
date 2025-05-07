@@ -35,6 +35,7 @@ public class RegistrationTest {
     @Before
     public void setUp() {
         driver = DriverFactory.createDriver("chrome"); // или "yandex"
+        driver.manage().window().maximize();
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registration = new RegistrationPage(driver);
