@@ -1,4 +1,5 @@
 import client.Client;
+import com.github.javafaker.Faker;
 import data.TestData;
 import driver.DriverFactory;
 import io.qameta.allure.junit4.DisplayName;
@@ -15,6 +16,7 @@ import pages.MainPage;
 import pages.ProfilePage;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public class ProfileTest {
 
@@ -22,29 +24,41 @@ public class ProfileTest {
     private MainPage mainPage;
     private LoginPage loginPage;
     private ProfilePage profilePage;
-    Client client;
+    private Client client;
+
+    private final Faker faker = new Faker(new Locale("en"));
+    private String email;
+    private String password;
+    private String name;
+    private UserLogin userLogin;
 
     @Before
     public void setUp() {
-        // Инициализация ChromeDriver
-        driver = DriverFactory.createDriver("chrome");  // "chrome" или "yandex"
+        driver = DriverFactory.createDriver("chrome");
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         profilePage = new ProfilePage(driver);
-        //Создаем пользователя через API запрос
+
+        // Генерация пользователя
+        email = faker.internet().emailAddress();
+        password = faker.internet().password(6, 12);  // валидный пароль
+        name = faker.name().firstName();
+
         client = new Client();
-        User user = new User(TestData.EMAIL, TestData.PASSWORD, TestData.NAME);
+        User user = new User(email, password, name);
         client.createUser(user);
-        // Открывается тестируемый сайт
+        userLogin = new UserLogin(email, password);
+
         driver.get(TestData.BASE_URL);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
+
     @Test
     @DisplayName("Navigate to profile from header")
     @Description("Проверка, что после авторизации при клике на кнопку «Личный кабинет» происходит переход на страницу профиля")
     public void runNavigateToProfileFromHeaderTest() {
         mainPage.clickOnMainPageLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
@@ -53,9 +67,9 @@ public class ProfileTest {
     @Test
     @DisplayName("Return to constructor from profile page")
     @Description("Проверка перехода на страницу конструктора по кнопке «Конструктор» из личного кабинета")
-    public void runReturnToConstructorFromProfileTest(){
+    public void runReturnToConstructorFromProfileTest() {
         mainPage.clickOnMainPageLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.clickOnConstructorButton();
@@ -65,9 +79,9 @@ public class ProfileTest {
     @Test
     @DisplayName("Return to constructor from profile page 2")
     @Description("Проверка перехода на страницу конструктора по логотипу Stellar Burgers из личного кабинета")
-    public void runReturnToConstructorFromProfileLogoTest(){
+    public void runReturnToConstructorFromProfileLogoTest() {
         mainPage.clickOnMainPageLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.clickOnLogo();
@@ -77,9 +91,9 @@ public class ProfileTest {
     @Test
     @DisplayName("Logout from profile page")
     @Description("Проверка, что при клике на кнопку «Выйти» в личном кабинете происходит корректный выход из аккаунта и переход на страницу входа")
-    public void runLogoutFromProfileTest(){
+    public void runLogoutFromProfileTest() {
         mainPage.clickOnMainPageLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.clickOnLogoutButton();
@@ -88,12 +102,9 @@ public class ProfileTest {
 
     @After
     public void tearDown() {
-        // Закрываем браузер после теста
         driver.quit();
-        UserLogin userLogin = new UserLogin(TestData.EMAIL, TestData.PASSWORD);
         ValidatableResponse response = client.loginUser(userLogin);
         String accessToken = Client.successfulCreation(response);
         client.deleteUser(accessToken);
     }
-
 }

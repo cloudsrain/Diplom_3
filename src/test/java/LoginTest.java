@@ -1,4 +1,5 @@
 import client.Client;
+import com.github.javafaker.Faker;
 import data.TestData;
 import driver.DriverFactory;
 import io.qameta.allure.junit4.DisplayName;
@@ -15,6 +16,7 @@ import pages.MainPage;
 import pages.ProfilePage;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public class LoginTest {
 
@@ -22,30 +24,44 @@ public class LoginTest {
     private MainPage mainPage;
     private LoginPage loginPage;
     private ProfilePage profilePage;
-    Client client;
+    private Client client;
+    private final Faker faker = new Faker(new Locale("en"));
 
+    private String email;
+    private String password;
+    private String name;
+    private UserLogin userLogin;
 
     @Before
     public void setUp() {
-        // Инициализация ChromeDriver
-        driver = DriverFactory.createDriver("chrome");  // "chrome" или "yandex"
+        // Инициализация драйвера и страниц
+        driver = DriverFactory.createDriver("chrome");
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         profilePage = new ProfilePage(driver);
-        //Создаем пользователя через API запрос
+
+        // Генерация данных
+        email = faker.internet().emailAddress();
+        password = faker.internet().password(6, 12); // валидный пароль
+        name = faker.name().firstName();
+
+        // Создание пользователя через API
         client = new Client();
-        User user = new User(TestData.EMAIL, TestData.PASSWORD, TestData.NAME);
+        User user = new User(email, password, name);
         client.createUser(user);
-        // Открывается тестируемый сайт
+        userLogin = new UserLogin(email, password);
+
+        // Открытие сайта
         driver.get(TestData.BASE_URL);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
+
     @Test
     @DisplayName("Successful login by main page login button")
     @Description("Вход по кнопке «Войти в аккаунт» на главной")
     public void runLoginViaMainPageButtonTest() {
         mainPage.clickOnMainPageLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
@@ -56,7 +72,7 @@ public class LoginTest {
     @Description("Вход через кнопку «Личный кабинет»")
     public void runLoginViaPersonalAccountButtonTest() {
         mainPage.clickOnPersonalAccountButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
@@ -69,7 +85,7 @@ public class LoginTest {
         mainPage.clickOnPersonalAccountButton();
         loginPage.clickOnRegistrationLink();
         loginPage.clickOnLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
@@ -82,18 +98,15 @@ public class LoginTest {
         mainPage.clickOnPersonalAccountButton();
         loginPage.clickOnForgetPasswordLink();
         loginPage.clickOnLoginButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
     }
 
-
     @After
     public void tearDown() {
-        // Закрываем браузер после теста
         driver.quit();
-        UserLogin userLogin = new UserLogin(TestData.EMAIL, TestData.PASSWORD);
         ValidatableResponse response = client.loginUser(userLogin);
         String accessToken = Client.successfulCreation(response);
         client.deleteUser(accessToken);

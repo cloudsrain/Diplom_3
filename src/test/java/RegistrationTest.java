@@ -1,4 +1,5 @@
 import client.Client;
+import com.github.javafaker.Faker;
 import data.TestData;
 import driver.DriverFactory;
 import io.qameta.allure.Description;
@@ -15,6 +16,7 @@ import pages.ProfilePage;
 import pages.RegistrationPage;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public class RegistrationTest {
 
@@ -23,18 +25,28 @@ public class RegistrationTest {
     private LoginPage loginPage;
     private RegistrationPage registration;
     private ProfilePage profilePage;
-    UserLogin userLogin = new UserLogin(TestData.EMAIL, TestData.PASSWORD);
-    boolean isUserCreated = false;
+    private final Faker faker = new Faker(new Locale("en"));
+    private String email;
+    private String password;
+    private String name;
+    private UserLogin userLogin;
+    private boolean isUserCreated = false;
 
     @Before
     public void setUp() {
-        // Инициализация ChromeDriver
-        driver = DriverFactory.createDriver("chrome");  // "chrome" или "yandex"
+        driver = DriverFactory.createDriver("chrome"); // или "yandex"
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registration = new RegistrationPage(driver);
         profilePage = new ProfilePage(driver);
-        // Открывается тестируемый сайт
+
+        // Генерация случайных валидных данных
+        email = faker.internet().emailAddress();
+        password = faker.internet().password(6, 12); // Валидный пароль (длина > 5)
+        name = faker.name().firstName();
+
+        userLogin = new UserLogin(email, password);
+
         driver.get(TestData.BASE_URL);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(6));
     }
@@ -42,12 +54,12 @@ public class RegistrationTest {
     @Test
     @DisplayName("Successful registration with valid data")
     @Description("Успешная регитсрация с валидными данными")
-    public void runSuccessfulRegistrationTest (){
+    public void runSuccessfulRegistrationTest() {
         mainPage.clickOnPersonalAccountButton();
         loginPage.clickOnRegistrationLink();
-        registration.fillingRegistrationForm(TestData.NAME,TestData.EMAIL, TestData.PASSWORD);
+        registration.fillingRegistrationForm(name, email, password);
         registration.clickOnRegistrationButton();
-        loginPage.fillingLoginForm(TestData.EMAIL, TestData.PASSWORD);
+        loginPage.fillingLoginForm(email, password);
         loginPage.clickOnLoginButton();
         mainPage.clickOnPersonalAccountButton();
         profilePage.successfulLogin();
@@ -57,24 +69,24 @@ public class RegistrationTest {
     @Test
     @DisplayName("Registration with invalid password")
     @Description("Регистрация с использованием слишком короткого пароля, ожидается сообщение об ошибке")
-    public void runInvalidRegistrationWithShortPasswordTest(){
+    public void runInvalidRegistrationWithShortPasswordTest() {
+        String shortPassword = faker.lorem().characters(1, 5);
+
         mainPage.clickOnPersonalAccountButton();
         loginPage.clickOnRegistrationLink();
-        registration.fillingRegistrationForm(TestData.NAME, TestData.EMAIL, TestData.INVALID_PASSWORD);
+        registration.fillingRegistrationForm(name, email, shortPassword);
         registration.clickOnRegistrationButton();
         registration.invalidPasswordError();
     }
 
     @After
     public void tearDown() {
-        // Закрываем браузер после теста
         driver.quit();
         Client client = new Client();
-        if (isUserCreated){
+        if (isUserCreated) {
             ValidatableResponse response = client.loginUser(userLogin);
             String accessToken = Client.successfulCreation(response);
             client.deleteUser(accessToken);
         }
-
     }
 }
